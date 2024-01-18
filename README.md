@@ -15,13 +15,21 @@ sudo usermod -aG sudo autobot
 
 ### Generate an SSH key locally
 
+You can do this a number of ways...
+
+```bash
+ssh-keygen -f ~/.ssh/home-key -t rsa -b 4096
 ```
-ssh-keygen -t ed25519 -C "your_email@example.com"
+
+or
+
+```bash
+make ssh_keys
 ```
 
 This will, by default save the public and private keys into your `~/.ssh` directory. 
 
-We want to take the `.pub` key from our local server, and add the contents of the pub key to the file `~/.ssh/authorized_keys` on each of the servers in the `autobot` users home directory. 
+We want to take the `.pub` key from our local server, and add the contents of the pub key to the file `~/.ssh/authorized_keys` on each of the servers in the `autobot` users home directory.
 
 This will allow your local machine (or any machine that has the private key) to be able to automaically login to any of the nodes without typing a password. Again this will be very helpful when running the ansible scripts.
 
