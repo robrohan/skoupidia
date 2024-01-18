@@ -1,0 +1,33 @@
+---
+- name: Deploy SSH Key
+  ansible.posix.authorized_key:
+    user: "{{ ansible_user }}"
+    key: "{{ lookup('file', '{{ key_path }}') }}"
+    state: present
+
+- name: Disable Password Authentication
+  ansible.builtin.lineinfile:
+    dest: /etc/ssh/sshd_config
+    regexp: '^PasswordAuthentication'
+    line: "PasswordAuthentication no"
+    state: present
+    backup: true
+
+- name: Disable Root Login
+  ansible.builtin.lineinfile:
+    dest: /etc/ssh/sshd_config
+    regexp: '^PermitRootLogin'
+    line: "PermitRootLogin no"
+    state: present
+    backup: true
+  notify:
+    - restart ssh
+
+- name: install some base dependencies
+  become: true
+  ansible.builtin.apt:
+    pkg:
+      - apt-transport-https
+      - curl
+    state: present
+    update_cache: true

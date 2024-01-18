@@ -1,0 +1,15 @@
+---
+- name: Machine Learning Playground KWorkers
+  hosts: workers
+  remote_user: autobot
+  vars:
+    # password only used to bootstrap adding the public key for non-password login
+    - autobot_password: 'xxxxxx'
+    - key_path: '/home/rob/.ssh/home-key.pub'
+  become: true
+  roles:
+  # might need to do: `docker system prune -a`
+  # if not starting from a fresh install
+    - {role: 'bootstrap'}                            # base stuff, python, ssh keys
+    - {role: 'cleanup'}                              # apt cleanup etc
+...

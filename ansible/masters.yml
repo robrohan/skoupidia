@@ -1,0 +1,14 @@
+---
+- name: Machine Learning Playground KMaster
+  hosts: masters
+  remote_user: autobot
+  vars:
+    - autobot_password: 'xxxxxx'
+    - key_path: '/home/rob/.ssh/home-key.pub'
+  become: true
+  roles:
+  # might need to do: `docker system prune -a`
+  # if not starting from a fresh install
+    - {role: 'bootstrap'}                            # base stuff, python, ssh keys
+    - {role: 'cleanup'}                              # apt cleanup etc
+...
