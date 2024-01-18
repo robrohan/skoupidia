@@ -4,7 +4,8 @@
   remote_user: autobot
   vars:
     # password only used to bootstrap adding the public key for non-password login
-    - autobot_password: 'xxxxxx'
+    # if you followed the README the key should already be on the boxen
+    - autobot_password: 'xxxxxxx'
     - key_path: '/home/rob/.ssh/home-key.pub'
   become: true
   roles:

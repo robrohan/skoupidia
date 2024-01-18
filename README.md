@@ -13,6 +13,13 @@ sudo adduser autobot
 sudo usermod -aG sudo autobot
 ```
 
+Autobot has now been added to the sudo group, but to make ansible less of a pain, remove the need to interactively type the password everytime autobot needs to run a root command.
+
+```
+sudo su
+echo "autobot ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers.d/peeps
+```
+
 ### Generate an SSH key locally
 
 You can do this a number of ways...
@@ -41,18 +48,6 @@ xclip -selection clipboard < ~/.ssh/home-key.pub
 
 Then ssh into the machine as user `autobot`, and paste the clipboard contents into the `~/.ssh/authorized_keys` file (or make it if it doesn't exist).
 
-### (Optional) Disable Password Login
-
-Once the keys are setup, it's a good idea to disable the ability to login with a password. However, since this is only for your local lab, it's really up to you.
-
----
-
-⚠️ **WARNING** After this change you will not be able to ssh in with a password.
-
----
-
-```
-echo "autobot ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers.d/peeps
-```
+----
 
 We should now be ready to run the [anisble](./ansible/README.md) code.
