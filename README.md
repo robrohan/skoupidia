@@ -10,47 +10,47 @@ Your home machine learning cluster made from rubbish and things found 'round the
 
 ### Create Autobot User
 
-On each all of the servers, create the user `autobot`. This will be the user ansible will use to install and remove software:
+On each of the servers, create a user named `autobot`. This will be the user ansible will use to install and remove software:
 
-```
+```bash
 sudo adduser autobot
 sudo usermod -aG sudo autobot
 ```
 
-Autobot has now been added to the sudo group, but to make ansible less of a pain, remove the need to interactively type the password every time autobot needs to run a root command.
+Autobot has now been added to the sudo group, but to make ansible less of a pain, remove the need to interactively type the password every time autobot changes to run a command as root.
 
-```
+```bash
 sudo su
 echo "autobot ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers.d/peeps
 ```
 
 #### Generate an SSH key locally
 
-You can do this a number of ways...
+You can do this a number of ways, but here is an easy version:
 
 ```bash
 ssh-keygen -f ~/.ssh/home-key -t rsa -b 4096
 ```
 
-or
+or you can use the premade task
 
 ```bash
 make ssh_keys
 ```
 
-This will, by default save the public and private keys into your `~/.ssh` directory. 
+This will, by default save the public and private keys into your `~/.ssh` directory.
 
-We want to take the `.pub` key from our local server, and add the contents of the pub key to the file `~/.ssh/authorized_keys` on each of the servers in the `autobot` users home directory.
+We want to take the `.pub` (public) key from our local server, and add the contents of the pub key to the file `~/.ssh/authorized_keys` on each of the servers in the `autobot` users home directory.
 
 This will allow your local machine (or any machine that has the private key) to be able to automatically login to any of the nodes without typing a password. Again this will be very helpful when running the ansible scripts.
 
-One way to do this is to copy the file contents to the clipboard
+One way to do this is to copy the file contents to the clipboard:
 
 ```bash
 xclip -selection clipboard < ~/.ssh/home-key.pub
 ```
 
-Then ssh into the machine as user `autobot`, and paste the clipboard contents into the `~/.ssh/authorized_keys` file (or make it if it doesn't exist).
+Then ssh into the machine as user `autobot`, and paste the clipboard contents into the `~/.ssh/authorized_keys` file (or create the file if it doesn't already exist).
 
 ### Run Ansible Setups
 
@@ -58,9 +58,13 @@ We should now be ready to run the [anisble](./ansible/README.md) code.
 
 The Anisble scripts will install some prerequisites, docker, and kubeadm and kubectl on the master and the worker nodes.
 
+Follow along with the [README in the ansible directory](./ansible/README.md) to continue.
+
 ### Few Difficult to Script Tasks
 
-Don't skip these. You'll need to run these commands on all the nodes (master and workers). After ansible has finished without error.
+Now that ansible had run completely, we need to do a few manual steps. Don't skip these!
+
+You'll need to run these commands on all the nodes (master and workers). After ansible has finished without error.
 
 ```bash
 sudo su
@@ -96,7 +100,7 @@ kubeadm config images pull
 
 ### Run Kube Init
 
-Only on the designated **master** node, run
+Now, only on the designated **master** node, run
 
 ```bash
 kubeadm init --v=5
@@ -161,13 +165,7 @@ We now have a working cluster!
 
 ## Install Kubeflow
 
-## Disk
-
-```
-/etc/fstab
-/dev/sdb1       /mnt/usbd       ext4    defaults        0       0
-```
-
+...
 
 ## References
 
