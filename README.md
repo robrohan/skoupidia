@@ -1,5 +1,9 @@
 # Skoupidia
 
+![Oscar the Grouch making Science from Skoupidia](./docs/a_oscar.png)
+![using the terminal](./docs/b_terminal.png)
+![and a bunch of skoupidia!](./docs/c_cluster.jpg)
+
 Your home machine learning cluster made from rubbish and things found 'round the house.
 
 ## Create A Kubernetes Cluster
@@ -169,7 +173,7 @@ We now have a working cluster!
 
 - [Build a Kubernetes Home Lab from Scratch step-by-step!](https://www.youtube.com/watch?v=_WW16Sp8-Jw)
 - [How to Install Containerd Container Runtime on Ubuntu 22.04](https://www.howtoforge.com/how-to-install-containerd-container-runtime-on-ubuntu-22-04/)
-
+- [How to with new stuff](https://v1-28.docs.kubernetes.io/docs/setup/production-environment/tools/kubeadm/install-kubeadm/)
 
 
 
