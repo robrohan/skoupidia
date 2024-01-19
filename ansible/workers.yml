@@ -7,10 +7,14 @@
     # if you followed the README the key should already be on the boxen
     - autobot_password: 'xxxxxxx'
     - key_path: '/home/rob/.ssh/home-key.pub'
+    # Note: latest version v1.29 on Ubuntu 22.04 wasn't working correctly
+    - k8_version: 'v1.28'
   become: true
   roles:
   # might need to do: `docker system prune -a`
   # if not starting from a fresh install
-    - {role: 'bootstrap'}                            # base stuff, python, ssh keys
+    - {role: 'bootstrap'}                            # base stuff, curl, packages, ssh keys
+    - {role: 'docker', tags: 'docker'}               # ability to run docker
+    - {role: 'k8base', tags: 'k8base'}
     - {role: 'cleanup'}                              # apt cleanup etc
 ...

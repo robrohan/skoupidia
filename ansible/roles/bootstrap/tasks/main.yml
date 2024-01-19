@@ -29,5 +29,9 @@
     pkg:
       - apt-transport-https
       - curl
+      - ca-certificates
+      - gpg
+      - gnupg2
+      - software-properties-common
     state: present
     update_cache: true
