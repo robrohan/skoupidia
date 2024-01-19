@@ -1,0 +1,21 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: local-pv-volume
+  labels:
+    type: local
+spec:
+  # This will delete all the data on the disk after the pod is shutdown
+  # You can use Retain or something else if you have other needs 
+  # (like you want to keep the data) between restarts
+  # see the USB example
+  persistentVolumeReclaimPolicy: Recycle
+  storageClassName: manual
+  capacity:
+    storage: 300Gi
+  accessModes:
+    - ReadWriteOnce
+  # Note: this will only provide one mountable disk, you'll need
+  # to create several directories if you want to have several volumes
+  hostPath:
+    path: "/mnt/kdata"

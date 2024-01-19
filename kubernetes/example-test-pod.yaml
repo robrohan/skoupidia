@@ -1,0 +1,99 @@
+##
+## Note, run local-pv-volume.yaml first, to create the PersistentVolume,
+## otherwise this claim will never be satisfied
+## 
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: local-pv-claim
+  namespace: default
+spec:
+  storageClassName: manual
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      # Note we request only 3Gi, but our defined volume is 300Gi
+      # this will not internally partition, it'll take the whole disk
+      # so make several volume claims if you want to have "different disks"
+      storage: 3Gi
+
+---
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: local-pv-pod
+  namespace: default
+  labels:
+    app: example-app
+spec:
+  # Request we be scheduled on a node with a hard disk type
+  # In my setup, this is only the control-plane node
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+        - matchExpressions:
+          - key: disktype
+            operator: In
+            values:
+              - hdd
+  volumes:
+    - name: local-pv-storage
+      persistentVolumeClaim:
+        claimName: local-pv-claim
+  containers:
+    - name: task-pv-container
+      image: nginx
+      ports:
+        - containerPort: 80
+          name: "http-server"
+      volumeMounts:
+        - mountPath: "/usr/share/nginx/html"
+          name: local-pv-storage
+
+---
+
+kind: Service
+apiVersion: v1
+metadata:
+  name: example-service
+  namespace: default
+spec:
+  # We don't have a load balancer, so we need to specify the node IP
+  # see nginx below...
+  externalIPs: ["192.168.1.15"]
+  selector:
+    app: example-app
+  ports:
+    - name: http-default
+      protocol: TCP
+      port: 9080           # port exposed by ingress / nginx
+      targetPort: 80       # port exposed by the pod
+
+---
+
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: example-ingress
+  namespace: default
+spec:
+  ingressClassName: nginx
+  tls:
+  rules:
+    # You'll need to edit your hosts file to point this domain to your cluster
+    # 192.168.1.15  example.lab.local
+    # for example. Because nginx uses the hostname to route the request and
+    # above we bound the service to the .15 address
+  - host: example.lab.local
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: example-service
+            port:
+              number: 9080

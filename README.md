@@ -163,6 +163,80 @@ kworker2   Ready    <none>          17m   v1.28.6
 
 We now have a working cluster!
 
+
+## Add Some Storage
+
+There are many ways to add storage to the cluster. For something more than just playing around in a home lab, have a look into [Minio][minio]. Minio creates a local storage system that is S3 compatible. This will allow any pod to use the storage. Here though, we are just using local disk storage.
+
+This is quite specific to how you have disks setup, but here is an example on mine. I have an external USB drive plugged into the master node. It is already formatted and ready to go. First you need to find which `/dev` the USB is plugged into, and then you can create a folder and mount it:
+
+```bash
+sudo mkdir /mnt/usbd
+sudo mount /dev/sbd1 /mnt/usbd
+```
+
+You should be able to see the contents of the drive now `ls /mnt/usbd`.
+
+Once you have that working, you can add the listing to the `/etc/fstab` file so that it will mount again if you reboot the server:
+
+```bash
+sudo su
+echo "/dev/sdb1 /mnt/usbd ext4 defaults 0 0" >> /etc/fstab
+```
+
+For example.
+
+With the drive mounted, you can make a PersistentVolume definition
+
+### Add Labels 
+
+You can make sure different pods run on correct nodes by adding a label to the nodes and then using the `affinity` section of the spec. For example I label my slow drive nodes and the nodes with a gpu like so:
+
+```bash
+kubectl label nodes kmaster disktype=hdd
+kubectl label nodes kworker1 disktype=ssd
+kubectl label nodes kworker2 disktype=ssd
+kubectl label nodes kworker1 has_gpu=true
+kubectl label nodes kworker2 has_tpu=true
+```
+
+You can see the labels with
+
+```
+kubectl get nodes --show-labels
+```
+
+Then you can do something like:
+
+```
+spec:
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+        - matchExpressions:
+          - key: disktype
+            operator: In
+            values:
+              - hdd
+```
+
+
+kubectl -n default exec -it local-pv-pod -- /bin/bash
+
+
+## Interact from Workstation
+
+kubectl config view
+
+kubectl config set-credentials cluster-admin --username=kubeuser --password=WQHgeb9wkp9fnt4axh
+
+kubectl config set-cluster 192.168.1.15 --insecure-skip-tls-verify=true --server=https://192.168.1.15:6443
+
+kubectl config set-context default/192.168.1.15/kubeuser --user=kubeuser/192.168.1.15 --namespace=default --cluster=192.168.1.15
+
+kubectl config use-context default/192.168.1.15/kubeuser
+
 ## Install Kubeflow
 
 ...
@@ -172,6 +246,7 @@ We now have a working cluster!
 - [Build a Kubernetes Home Lab from Scratch step-by-step!](https://www.youtube.com/watch?v=_WW16Sp8-Jw)
 - [How to Install Containerd Container Runtime on Ubuntu 22.04](https://www.howtoforge.com/how-to-install-containerd-container-runtime-on-ubuntu-22-04/)
 - [How to with new stuff](https://v1-28.docs.kubernetes.io/docs/setup/production-environment/tools/kubeadm/install-kubeadm/)
+- [](https://blog.christianposta.com/kubernetes/logging-into-a-kubernetes-cluster-with-kubectl/)
 
-
+[minio]: https://medium.com/@karrier_io/minio-s3-compatible-storage-on-kubernetes-74e2cf0902f3
 
