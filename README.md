@@ -1,10 +1,10 @@
 # Skoupidia
 
+Your home machine learning cluster made from rubbish and things found 'round the house.
+
 ![Oscar the Grouch making Science from Skoupidia](./docs/a_oscar.png)
 ![using the terminal](./docs/b_terminal.png)
 ![and a bunch of skoupidia!](./docs/c_cluster.jpg)
-
-Your home machine learning cluster made from rubbish and things found 'round the house.
 
 ## Create A Kubernetes Cluster
 
