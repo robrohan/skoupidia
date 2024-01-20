@@ -6,6 +6,11 @@ Your home machine learning cluster made from rubbish and things found 'round the
 ![using the terminal](./docs/b_terminal.png)
 ![and a bunch of skoupidia!](./docs/c_cluster.jpg)
 
+1. [Create A Kubernetes Cluster](#create-a-kubernetes-cluster)
+1. [Install Kubeflow](#install-kubeflow)
+1. [My Own Personal Setup](#my-own-personal-setup)
+1. [References](#references)
+
 ## Create A Kubernetes Cluster
 
 ### Create Autobot User
@@ -202,13 +207,13 @@ kubectl label nodes kworker2 has_tpu=true
 
 You can see the labels with
 
-```
+```bash
 kubectl get nodes --show-labels
 ```
 
 Then you can do something like:
 
-```
+```yaml
 spec:
   affinity:
     nodeAffinity:
@@ -221,27 +226,25 @@ spec:
               - hdd
 ```
 
-
+```bash
 kubectl -n default exec -it local-pv-pod -- /bin/bash
+```
 
+# Install Kubeflow
 
-## Interact from Workstation
+(tbd)
 
-kubectl config view
+# My Own Personal Setup
 
-kubectl config set-credentials cluster-admin --username=kubeuser --password=WQHgeb9wkp9fnt4axh
+```bash
+kubectl apply -f https://raw.githubusercontent.com/robrohan/skoupidia/main/kubernetes/oscar/local-pv-volume.yaml
+```
 
-kubectl config set-cluster 192.168.1.15 --insecure-skip-tls-verify=true --server=https://192.168.1.15:6443
+```bash
+kuberctl apply -f https://raw.githubusercontent.com/robrohan/skoupidia/main/kubernetes/oscar/usb-pv-volume.yaml
+```
 
-kubectl config set-context default/192.168.1.15/kubeuser --user=kubeuser/192.168.1.15 --namespace=default --cluster=192.168.1.15
-
-kubectl config use-context default/192.168.1.15/kubeuser
-
-## Install Kubeflow
-
-...
-
-## References
+# References
 
 - [Build a Kubernetes Home Lab from Scratch step-by-step!](https://www.youtube.com/watch?v=_WW16Sp8-Jw)
 - [How to Install Containerd Container Runtime on Ubuntu 22.04](https://www.howtoforge.com/how-to-install-containerd-container-runtime-on-ubuntu-22-04/)
