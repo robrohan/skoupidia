@@ -157,3 +157,4 @@ spec:
     - ReadWriteOnce
   hostPath:
     path: "/mnt/kdata/8"
+

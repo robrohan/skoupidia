@@ -1,0 +1,16 @@
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: science
+  labels:
+    name: science
+
+---
+
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: tools
+  labels:
+    name: tools
