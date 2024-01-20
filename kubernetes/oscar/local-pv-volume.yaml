@@ -1,0 +1,159 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: local-pv-volume-0
+  labels:
+    type: local
+spec:
+  persistentVolumeReclaimPolicy: Recycle
+  storageClassName: local-storage
+  capacity:
+    storage: 10Gi
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+    path: "/mnt/kdata/0"
+
+---
+
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: local-pv-volume-1
+  labels:
+    type: local
+spec:
+  persistentVolumeReclaimPolicy: Recycle
+  storageClassName: local-storage
+  capacity:
+    storage: 10Gi
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+    path: "/mnt/kdata/1"
+
+---
+
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: local-pv-volume-2
+  labels:
+    type: local
+spec:
+  persistentVolumeReclaimPolicy: Recycle
+  storageClassName: local-storage
+  capacity:
+    storage: 10Gi
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+    path: "/mnt/kdata/2"
+
+---
+
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: local-pv-volume-3
+  labels:
+    type: local
+spec:
+  persistentVolumeReclaimPolicy: Recycle
+  storageClassName: local-storage
+  capacity:
+    storage: 100Gi
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+    path: "/mnt/kdata/3"
+
+---
+
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: local-pv-volume-4
+  labels:
+    type: local
+spec:
+  persistentVolumeReclaimPolicy: Recycle
+  storageClassName: local-storage
+  capacity:
+    storage: 100Gi
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+    path: "/mnt/kdata/4"
+
+---
+
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: local-pv-volume-3
+  labels:
+    type: local
+spec:
+  persistentVolumeReclaimPolicy: Recycle
+  storageClassName: local-storage
+  capacity:
+    storage: 100Gi
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+    path: "/mnt/kdata/3"
+
+---
+
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: local-pv-volume-4
+  labels:
+    type: local
+spec:
+  persistentVolumeReclaimPolicy: Recycle
+  storageClassName: local-storage
+  capacity:
+    storage: 100Gi
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+    path: "/mnt/kdata/4"
+
+---
+
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: local-pv-volume-5
+  labels:
+    type: local
+spec:
+  persistentVolumeReclaimPolicy: Recycle
+  storageClassName: local-storage
+  capacity:
+    storage: 3Gi
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+    path: "/mnt/kdata/5"
+
+---
+
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: local-pv-volume-6
+  labels:
+    type: local
+spec:
+  persistentVolumeReclaimPolicy: Recycle
+  storageClassName: local-storage
+  capacity:
+    storage: 3Gi
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+    path: "/mnt/kdata/6"

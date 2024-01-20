@@ -1,0 +1,30 @@
+##
+## My Jellyfin disk of movies. This should only be mounted on the control node
+## and should not be deleted when the pod is deleted.
+##
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: usb-pv-volume
+  labels:
+    type: usb-drive
+spec:
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: local-storage
+  capacity:
+    storage: 293Gi
+  volumeMode: Filesystem
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+    path: "/mnt/usbd"
+  # The usb drive is plugged into the master node 
+  # in my setup
+  nodeAffinity:
+      required:
+        nodeSelectorTerms:
+        - matchExpressions:
+          - key: kubernetes.io/hostname
+            operator: In
+            values:
+            - kmaster
