@@ -13,6 +13,7 @@ spec:
   selector:
     matchLabels:
       type: "usb-drive"
+      disk: "c"
 ---
 
 apiVersion: v1
@@ -30,7 +31,7 @@ spec:
   selector:
     matchLabels:
       type: "usb-drive"
-
+      disk: "c"
 ---
 
 apiVersion: v1
@@ -48,7 +49,7 @@ spec:
   selector:
     matchLabels:
       type: "usb-drive"
-
+      disk: "c"
 ---
 
 apiVersion: v1
@@ -93,7 +94,6 @@ spec:
           name: jellyfin-cache-storage
         - mountPath: "/media"
           name: jellyfin-media-storage
-
 ---
 
 kind: Service
@@ -112,7 +112,6 @@ spec:
       protocol: TCP
       port: 80               # port exposed by ingress / nginx
       targetPort: 8096       # port exposed by the pod
-
 ---
 
 apiVersion: networking.k8s.io/v1

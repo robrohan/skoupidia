@@ -8,6 +8,7 @@ metadata:
   name: usb-pv-volume
   labels:
     type: usb-drive
+    disk: "d"
 spec:
   persistentVolumeReclaimPolicy: Retain
   storageClassName: local-storage
@@ -37,6 +38,7 @@ metadata:
   name: usb-jelly-1-pv-volume
   labels:
     type: usb-drive
+    disk: "c"
 spec:
   persistentVolumeReclaimPolicy: Retain
   storageClassName: local-storage
@@ -66,6 +68,7 @@ metadata:
   name: usb-jelly-2-pv-volume
   labels:
     type: usb-drive
+    disk: "c"
 spec:
   persistentVolumeReclaimPolicy: Retain
   storageClassName: local-storage
@@ -93,6 +96,7 @@ metadata:
   name: usb-jelly-3-pv-volume
   labels:
     type: usb-drive
+    disk: "c"
 spec:
   persistentVolumeReclaimPolicy: Retain
   storageClassName: local-storage

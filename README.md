@@ -265,7 +265,7 @@ kubectl apply -f https://raw.githubusercontent.com/robrohan/skoupidia/main/kuber
 ```
 
 ```
-kubectl patch pv usb-1-pv-volume -p '{"spec":{"claimRef": null}}'
+kubectl patch pv usb-jelly-1-pv-volume -p '{"spec":{"claimRef": null}}'
 ```
 
 

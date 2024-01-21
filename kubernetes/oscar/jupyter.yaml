@@ -10,7 +10,9 @@ spec:
   resources:
     requests:
       storage: 10Gi
-
+  selector:
+    matchLabels:
+      type: "local"
 ---
 
 apiVersion: v1
@@ -52,7 +54,6 @@ spec:
       volumeMounts:
         - mountPath: "/home/jovyan/work"
           name: jupyter-storage
-
 ---
 
 kind: Service
@@ -63,15 +64,16 @@ metadata:
 spec:
   # We don't have a load balancer, so we need to specify the node IP
   # see nginx below...
+  # type: NodePort
   externalIPs: ["192.168.1.15"]
   selector:
     app: jupyter-app
   ports:
     - name: jupyter-http-default
       protocol: TCP
-      port: 80               # port exposed by ingress / nginx
-      targetPort: 8888       # port exposed by the pod
-
+      port: 80              # port exposed by ingress / nginx
+      targetPort: 8888      # port exposed by the pod
+      # nodePort: 30000       # The range of valid ports is 30000-32767
 ---
 
 apiVersion: networking.k8s.io/v1
