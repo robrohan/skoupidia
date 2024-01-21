@@ -31,7 +31,7 @@ spec:
           - key: has_tpu
             operator: In
             values:
-              - true
+              - "true"
   volumes:
     - name: jupyter-storage
       persistentVolumeClaim:
@@ -40,9 +40,12 @@ spec:
     - name: jupyter-container
       image: robrohan/juypter-tensorflow-coral
       env:
-        TRANSFORMERS_CACHE: /data
-        PASSWORD: password
-        JUPYTER_TOKEN: easy
+        - name: TRANSFORMERS_CACHE
+          value: "/data"
+        - name: PASSWORD
+          value: "password"
+        - name: JUPYTER_TOKEN
+          value: "easy"
       ports:
         - containerPort: 8888
           name: "http-server"
