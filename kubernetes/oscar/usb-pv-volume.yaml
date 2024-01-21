@@ -28,3 +28,32 @@ spec:
             operator: In
             values:
             - kmaster
+
+---
+
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: usb-1-pv-volume
+  labels:
+    type: usb-drive
+spec:
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: local-storage
+  capacity:
+    storage: 430Gi
+  volumeMode: Filesystem
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+    path: "/mnt/usbc"
+  # The usb drive is plugged into the master node 
+  # in my setup
+  nodeAffinity:
+      required:
+        nodeSelectorTerms:
+        - matchExpressions:
+          - key: kubernetes.io/hostname
+            operator: In
+            values:
+            - kmaster

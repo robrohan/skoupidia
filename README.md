@@ -169,15 +169,21 @@ kworker2   Ready    <none>          17m   v1.28.6
 We now have a working cluster!
 
 
-## Add Some Storage
+### Add Some Storage
 
 There are many ways to add storage to the cluster. For something more than just playing around in a home lab, have a look into [Minio][minio]. Minio creates a local storage system that is S3 compatible. This will allow any pod to use the storage. Here though, we are just using local disk storage.
 
 This is quite specific to how you have disks setup, but here is an example on mine. I have an external USB drive plugged into the master node. It is already formatted and ready to go. First you need to find which `/dev` the USB is plugged into, and then you can create a folder and mount it:
 
 ```bash
+lsblk
+```
+
+```bash
 sudo mkdir /mnt/usbd
 sudo mount /dev/sbd1 /mnt/usbd
+sudo mkdir /mnt/usbc
+sudo mount /dev/sdc1 /mnt/usbc
 ```
 
 You should be able to see the contents of the drive now `ls /mnt/usbd`.
@@ -187,6 +193,7 @@ Once you have that working, you can add the listing to the `/etc/fstab` file so 
 ```bash
 sudo su
 echo "/dev/sdb1 /mnt/usbd ext4 defaults 0 0" >> /etc/fstab
+echo "/dev/sdc2 /mnt/usbc ext4 defaults 0 0" >> /etc/fstab
 ```
 
 For example.
@@ -230,11 +237,21 @@ spec:
 kubectl -n default exec -it local-pv-pod -- /bin/bash
 ```
 
-# Install Kubeflow
+## Optional - Install Tailscale
+
+```bash
+curl -fsSL https://tailscale.com/install.sh | sh
+```
+
+## Install Kubeflow
 
 (tbd)
 
 # My Own Personal Setup
+
+```bash
+kubectl apply -f https://raw.githubusercontent.com/robrohan/skoupidia/main/kubernetes/oscar/namespaces.yaml
+```
 
 ```bash
 kubectl apply -f https://raw.githubusercontent.com/robrohan/skoupidia/main/kubernetes/oscar/local-pv-volume.yaml
@@ -243,6 +260,8 @@ kubectl apply -f https://raw.githubusercontent.com/robrohan/skoupidia/main/kuber
 ```bash
 kuberctl apply -f https://raw.githubusercontent.com/robrohan/skoupidia/main/kubernetes/oscar/usb-pv-volume.yaml
 ```
+
+
 
 # References
 
