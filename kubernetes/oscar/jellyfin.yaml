@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: jellyfin-pv-claim
+  name: jellyfin-config-claim
   namespace: tools
 spec:
   storageClassName: local-storage
@@ -9,10 +9,46 @@ spec:
     - ReadWriteOnce
   resources:
     requests:
-      storage: 430Gi
+      storage: 1Gi
   selector:
     matchLabels:
       type: "usb-drive"
+---
+
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: jellyfin-cache-claim
+  namespace: tools
+spec:
+  storageClassName: local-storage
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 15Gi
+  selector:
+    matchLabels:
+      type: "usb-drive"
+
+---
+
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: jellyfin-media-claim
+  namespace: tools
+spec:
+  storageClassName: local-storage
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 414Gi
+  selector:
+    matchLabels:
+      type: "usb-drive"
+
 ---
 
 apiVersion: v1
@@ -35,9 +71,15 @@ spec:
             values:
               - hdd
   volumes:
-    - name: jellyfin-storage
+    - name: jellyfin-config-storage
       persistentVolumeClaim:
-        claimName: jellyfin-pv-claim
+        claimName: jellyfin-config-claim
+    - name: jellyfin-cache-storage
+      persistentVolumeClaim:
+        claimName: jellyfin-cache-claim
+    - name: jellyfin-media-storage
+      persistentVolumeClaim:
+        claimName: jellyfin-media-claim
   containers:
     - name: jellyfin-container
       image: jellyfin/jellyfin
@@ -45,8 +87,12 @@ spec:
         - containerPort: 8096
           name: "http-server"
       volumeMounts:
-        - mountPath: "/"
-          name: jellyfin-storage
+        - mountPath: "/config"
+          name: jellyfin-config-storage
+        - mountPath: "/cache"
+          name: jellyfin-cache-storage
+        - mountPath: "/media"
+          name: jellyfin-media-storage
 
 ---
 
