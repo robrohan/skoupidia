@@ -258,7 +258,7 @@ kubectl apply -f https://raw.githubusercontent.com/robrohan/skoupidia/main/kuber
 ```
 
 ```bash
-kuberctl apply -f https://raw.githubusercontent.com/robrohan/skoupidia/main/kubernetes/oscar/usb-pv-volume.yaml
+kubectl apply -f https://raw.githubusercontent.com/robrohan/skoupidia/main/kubernetes/oscar/usb-pv-volume.yaml
 ```
 
 

@@ -1,0 +1,92 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: jellyfin-pv-claim
+  namespace: tools
+spec:
+  storageClassName: manual
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 430Gi
+
+---
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: jellyfin-pod
+  namespace: tools
+  labels:
+    app: jellyfin-app
+spec:
+  # Request we be scheduled on a node with a hard disk type
+  # In my setup, this is only the control-plane node
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+        - matchExpressions:
+          - key: disktype
+            operator: In
+            values:
+              - hdd
+  volumes:
+    - name: jellyfin-storage
+      persistentVolumeClaim:
+        claimName: jellyfin-pv-claim
+  containers:
+    - name: jellyfin-container
+      image: jellyfin/jellyfin
+      ports:
+        - containerPort: 8096
+          name: "http-server"
+      volumeMounts:
+        - mountPath: "/"
+          name: jellyfin-storage
+
+---
+
+kind: Service
+apiVersion: v1
+metadata:
+  name: jellyfin-service
+  namespace: tools
+spec:
+  # We don't have a load balancer, so we need to specify the node IP
+  # see nginx below...
+  externalIPs: ["192.168.1.15"]
+  selector:
+    app: jellyfin-app
+  ports:
+    - name: http-default
+      protocol: TCP
+      port: 80               # port exposed by ingress / nginx
+      targetPort: 8096       # port exposed by the pod
+
+---
+
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: jellyfin-ingress
+  namespace: tools
+spec:
+  ingressClassName: nginx
+  tls:
+  rules:
+    # You'll need to edit your hosts file to point this domain to your cluster
+    # 192.168.1.15  example.lab.local
+    # for example. Because nginx uses the hostname to route the request and
+    # above we bound the service to the .15 address
+  - host: jellyfin.lab.local
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: jellyfin-service
+            port:
+              number: 80
