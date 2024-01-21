@@ -4,13 +4,15 @@ metadata:
   name: jellyfin-pv-claim
   namespace: tools
 spec:
-  storageClassName: manual
+  storageClassName: local-storage
   accessModes:
     - ReadWriteOnce
   resources:
     requests:
       storage: 430Gi
-
+  selector:
+    matchLabels:
+      type: "usb-drive"
 ---
 
 apiVersion: v1

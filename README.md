@@ -260,7 +260,13 @@ kubectl apply -f https://raw.githubusercontent.com/robrohan/skoupidia/main/kuber
 ```bash
 kubectl apply -f https://raw.githubusercontent.com/robrohan/skoupidia/main/kubernetes/oscar/usb-pv-volume.yaml
 ```
+```bash
+kubectl apply -f https://raw.githubusercontent.com/robrohan/skoupidia/main/kubernetes/oscar/jellyfin.yaml
+```
 
+```
+kubectl patch pv usb-1-pv-volume -p '{"spec":{"claimRef": null}}'
+```
 
 
 # References
