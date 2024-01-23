@@ -168,6 +168,16 @@ kworker2   Ready    <none>          17m   v1.28.6
 
 We now have a working cluster!
 
+### Add MetalLB
+
+For up to date info see here: https://metallb.org/installation/ but in summary, we are going to install the loadbalancer:
+
+```bash
+kubectl apply -f https://raw.githubusercontent.com/metallb/metallb/v0.13.12/config/manifests/metallb-native.yaml
+```
+
+And then, associate your local IP pool to the local load balancer by editing an applying `kubernetes/metallb_stage2.yaml`.
+
 
 ### Add Some Storage
 
@@ -260,8 +270,13 @@ kubectl apply -f https://raw.githubusercontent.com/robrohan/skoupidia/main/kuber
 ```bash
 kubectl apply -f https://raw.githubusercontent.com/robrohan/skoupidia/main/kubernetes/oscar/usb-pv-volume.yaml
 ```
+
 ```bash
 kubectl apply -f https://raw.githubusercontent.com/robrohan/skoupidia/main/kubernetes/oscar/jellyfin.yaml
+```
+
+```bash
+kubectl apply -f https://raw.githubusercontent.com/robrohan/skoupidia/main/kubernetes/oscar/jupyter.yaml
 ```
 
 ```

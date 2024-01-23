@@ -1,0 +1,30 @@
+---
+- name: install aws cli
+  become: true
+  ansible.builtin.apt:
+    pkg:
+      - awscli
+    state: present
+    update_cache: true
+
+- name: Create AWS config directory
+  ansible.builtin.file:
+    path: "/home/{{ ansible_user }}/.aws"
+    state: directory
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+    mode: 0775
+
+- name: AWS CLI config file
+  become: true
+  become_user: "{{ ansible_user }}"
+  ansible.builtin.template:
+    src: config.j2 
+    dest: "/home/{{ ansible_user }}/.aws/config"
+
+- name: AWS CLI credentials file
+  become: true
+  become_user: "{{ ansible_user }}"
+  ansible.builtin.template:
+    src: credentials.j2 
+    dest: "/home/{{ ansible_user }}/.aws/credentials"

@@ -16,5 +16,6 @@
     - {role: 'bootstrap'}                            # base stuff, curl, ssh keys
     - {role: 'docker', tags: 'docker'}               # ability to run docker
     - {role: 'k8base', tags: 'k8base'}
+  #  - {role: 'awscli', tags: 'awscli'}               # if you want aws cli to be on the box
     - {role: 'cleanup'}                              # apt cleanup etc
 ...

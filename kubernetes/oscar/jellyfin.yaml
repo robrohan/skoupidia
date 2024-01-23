@@ -52,48 +52,56 @@ spec:
       disk: "c"
 ---
 
-apiVersion: v1
-kind: Pod
+apiVersion: apps/v1
+kind: Deployment
 metadata:
-  name: jellyfin-pod
+  name: jellyfin-deployment
   namespace: tools
-  labels:
-    app: jellyfin-app
 spec:
-  # Request we be scheduled on a node with a hard disk type
-  # In my setup, this is only the control-plane node
-  affinity:
-    nodeAffinity:
-      requiredDuringSchedulingIgnoredDuringExecution:
-        nodeSelectorTerms:
-        - matchExpressions:
-          - key: disktype
-            operator: In
-            values:
-              - hdd
-  volumes:
-    - name: jellyfin-config-storage
-      persistentVolumeClaim:
-        claimName: jellyfin-config-claim
-    - name: jellyfin-cache-storage
-      persistentVolumeClaim:
-        claimName: jellyfin-cache-claim
-    - name: jellyfin-media-storage
-      persistentVolumeClaim:
-        claimName: jellyfin-media-claim
-  containers:
-    - name: jellyfin-container
-      image: jellyfin/jellyfin
-      ports:
-        - containerPort: 8096
-          name: "http-server"
-      volumeMounts:
-        - mountPath: "/config"
-          name: jellyfin-config-storage
-        - mountPath: "/cache"
-          name: jellyfin-cache-storage
-        - mountPath: "/media"
-          name: jellyfin-media-storage
+  replicas: 1
+  selector:
+    matchLabels:
+      app: jellyfin-app
+  template:
+    metadata:
+      labels:
+        app: jellyfin-app
+    spec:
+      # type: LoadBalancer
+      # Request we be scheduled on a node with a hard disk type
+      # In my setup, this is only the control-plane node
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: disktype
+                operator: In
+                values:
+                  - hdd
+      volumes:
+        - name: jellyfin-config-storage
+          persistentVolumeClaim:
+            claimName: jellyfin-config-claim
+        - name: jellyfin-cache-storage
+          persistentVolumeClaim:
+            claimName: jellyfin-cache-claim
+        - name: jellyfin-media-storage
+          persistentVolumeClaim:
+            claimName: jellyfin-media-claim
+      containers:
+        - name: jellyfin-container
+          image: jellyfin/jellyfin
+          ports:
+            - containerPort: 8096
+              name: "http-server"
+          volumeMounts:
+            - mountPath: "/config"
+              name: jellyfin-config-storage
+            - mountPath: "/cache"
+              name: jellyfin-cache-storage
+            - mountPath: "/media"
+              name: jellyfin-media-storage
 ---
 
 kind: Service
@@ -104,7 +112,7 @@ metadata:
 spec:
   # We don't have a load balancer, so we need to specify the node IP
   # see nginx below...
-  externalIPs: ["192.168.1.15"]
+  type: LoadBalancer
   selector:
     app: jellyfin-app
   ports:
@@ -112,28 +120,28 @@ spec:
       protocol: TCP
       port: 80               # port exposed by ingress / nginx
       targetPort: 8096       # port exposed by the pod
----
-
-apiVersion: networking.k8s.io/v1
-kind: Ingress
-metadata:
-  name: jellyfin-ingress
-  namespace: tools
-spec:
-  ingressClassName: nginx
-  tls:
-  rules:
-    # You'll need to edit your hosts file to point this domain to your cluster
-    # 192.168.1.15  example.lab.local
-    # for example. Because nginx uses the hostname to route the request and
-    # above we bound the service to the .15 address
-  - host: jellyfin.lab.local
-    http:
-      paths:
-      - path: /
-        pathType: Prefix
-        backend:
-          service:
-            name: jellyfin-service
-            port:
-              number: 80
+#---
+#
+# apiVersion: networking.k8s.io/v1
+# kind: Ingress
+# metadata:
+#   name: jellyfin-ingress
+#   namespace: tools
+# spec:
+#   ingressClassName: nginx
+#   tls:
+#   rules:
+#     # You'll need to edit your hosts file to point this domain to your cluster
+#     # 192.168.1.15  example.lab.local
+#     # for example. Because nginx uses the hostname to route the request and
+#     # above we bound the service to the .15 address
+#   - host: jellyfin.lab.local
+#     http:
+#       paths:
+#       - path: /
+#         pathType: Prefix
+#         backend:
+#           service:
+#             name: jellyfin-app
+#             port:
+#               number: 80

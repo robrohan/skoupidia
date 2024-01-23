@@ -1,0 +1,36 @@
+# 192.168.1.30
+# 192.168.1.20
+
+# 192.168.1.15
+# 192.168.1.14
+# 192.168.1.13
+
+# 192.168.1.11
+
+## Run and edit
+## kubectl edit configmap -n kube-system kube-proxy
+## ipvs:
+##  strictARP: true
+
+##
+## RUN THIS AFTER
+## kubectl apply -f https://raw.githubusercontent.com/metallb/metallb/v0.13.12/config/manifests/metallb-native.yaml
+##
+## Verify: kubectl -n metallb-system get all
+## may need to run kubectl delete validatingwebhookconfigurations.admissionregistration.k8s.io metallb-webhook-configuration
+---
+apiVersion: metallb.io/v1beta1
+kind: IPAddressPool
+metadata:
+  name: first-pool
+  namespace: metallb-system
+spec:
+  addresses:
+  - 192.168.1.20-192.168.1.30
+
+---
+apiVersion: metallb.io/v1beta1
+kind: L2Advertisement
+metadata:
+  name: example
+  namespace: metallb-system
