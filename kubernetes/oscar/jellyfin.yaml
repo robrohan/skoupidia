@@ -120,6 +120,8 @@ spec:
       protocol: TCP
       port: 80               # port exposed by ingress / nginx
       targetPort: 8096       # port exposed by the pod
+  externalTrafficPolicy: Local
+
 #---
 #
 # apiVersion: networking.k8s.io/v1
