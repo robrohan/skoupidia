@@ -89,6 +89,7 @@ spec:
         - name: jellyfin-media-storage
           persistentVolumeClaim:
             claimName: jellyfin-media-claim
+      dnsPolicy: ClusterFirst
       containers:
         - name: jellyfin-container
           image: jellyfin/jellyfin

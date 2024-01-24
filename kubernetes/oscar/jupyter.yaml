@@ -45,6 +45,7 @@ spec:
         - name: jupyter-storage
           persistentVolumeClaim:
             claimName: jupyter-claim
+      dnsPolicy: ClusterFirst
       containers:
         - name: jupyter-container
           image: robrohan/juypter-tensorflow-coral
@@ -61,6 +62,12 @@ spec:
           volumeMounts:
             - mountPath: "/home/jovyan/work"
               name: jupyter-storage
+          ### WARNING, this is only here because I am tool lazy to figure out the
+          ### right way to get the coral libs working. If not using a coral TPU, 
+          ### probably remove these.
+          securityContext:
+            privileged: true
+            allowPrivilegeEscalation: true
 ---
 
 kind: Service
