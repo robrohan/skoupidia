@@ -58,10 +58,10 @@ spec:
       volumes:
         - name: bin
           hostPath:
-            path: /usr/lib/nvidia-cuda-toolkit/bin
+            path: /usr/local/cuda/bin
         - name: lib
           hostPath:
-            path: /usr/lib/nvidia-cuda-toolkit/
+            path: /usr/local/cuda/lib64
         - name: libcuda-so-1
           hostPath:
             path: /usr/lib/x86_64-linux-gnu/libcuda.so.1
@@ -88,13 +88,18 @@ spec:
           ports:
             - containerPort: 8888
               name: "http-server"
+          # resources:
+          #     limits:
+          #       alpha.kubernetes.io/nvidia-gpu: 1
           volumeMounts:
             - mountPath: "/home/jovyan/work"
               name: jupyter-storage
             - mountPath: "/data"
               name: jupyter-models-storage
+            ## These need to wind up on the PATH env variable
             - mountPath: /usr/local/nvidia/bin
               name: bin
+            ## These need to wind up on the LD_LIBRARY_PATH env variable
             - mountPath: /usr/local/nvidia/lib
               name: lib
             - mountPath: /usr/lib/x86_64-linux-gnu/libcuda.so.1
@@ -104,9 +109,9 @@ spec:
           ### WARNING, this is only here because I am tool lazy to figure out the
           ### right way to get the coral libs working. If not using a coral TPU, 
           ### probably remove these.
-          # securityContext:
-          #   privileged: true
-          #   allowPrivilegeEscalation: true
+          securityContext:
+            privileged: true
+            allowPrivilegeEscalation: true
 ---
 
 kind: Service

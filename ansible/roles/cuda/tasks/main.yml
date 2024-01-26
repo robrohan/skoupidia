@@ -1,6 +1,14 @@
 ###
 ### WARNING: this is very specific to Ubuntu, and Ubuntu version!
 ###
+
+# NVIDIA_GPU_NAME=$(nvidia-smi --query-gpu=gpu_name --format=csv,noheader --id=0 | sed -e 's/ /-/g')
+# KUBELET_OPTS="$KUBELET_OPTS --node-labels='alpha.kubernetes.io/nvidia-gpu-name=$NVIDIA_GPU_NAME,alpha.kubernetes.io/nvidia-gpu=1'"
+# echo "KUBELET_OPTS=$KUBELET_OPTS" > /etc/default/kubelet
+# systemctl restart kubelet.service
+# 
+# source /etc/default/kubelet
+
 ---
 - name: add the cuda deb package
   become: true
@@ -12,8 +20,8 @@
   become: true
   ansible.builtin.apt:
     pkg:
-      - cuda
-      - nvidia-cuda-toolkit
+      - cuda=12.3.2-1
+      - nvidia-gds=12.3.2-1
     state: present
     update_cache: true
 

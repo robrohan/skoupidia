@@ -266,8 +266,6 @@ kubectl -n default exec -it local-pv-pod -- /bin/bash
 curl -fsSL https://tailscale.com/install.sh | sh
 ```
 
-
-
 ## Install Kubeflow
 
 (tbd)
@@ -302,11 +300,20 @@ kubectl patch pv usb-jelly-1-pv-volume -p '{"spec":{"claimRef": null}}'
 
 ## DNS
 
-On worker nodes
+This is can be quite frustrating. Inside a worker node, it will use the master node for DNS. The master node will look inside itself to resolve the DNS entry, but if it doesn't know the URL, it'll look in `/etc/resolv.conf` for a name server.
+
+There are seemingly several process that overwrite that file from time to time which seems to kill resolution. The netplan process, resolvd process, and tailscale can over write it too. This is the process I've found that works, but if it gets to be too much of a problem, you can unlink the /etc/resolv.conf file and just edit it.
+
+On kmaster node:
 
 ```bash
 sudo vi /etc/systemd/resolved.conf
-sudo systemctl restart systemd-resolved.service
+
+sudo unlink /etc/resolv.conf
+sudo ln -sf /run/systemd/resolve/resolv.conf /etc/resolv.conf
+sudo systemctl restart systemd-resolved
+sudo systemctl enable systemd-resolved
+
 sudo cat /etc/resolv.conf
 ```
 
