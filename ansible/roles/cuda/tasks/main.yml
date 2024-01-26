@@ -1,0 +1,20 @@
+###
+### WARNING: this is very specific to Ubuntu, and Ubuntu version!
+###
+---
+- name: add the cuda deb package
+  become: true
+  ansible.builtin.shell: |
+    curl -O https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2204/x86_64/cuda-keyring_1.1-1_all.deb
+    dpkg -i cuda-keyring_1.1-1_all.deb
+
+- name: install cuda binary
+  become: true
+  ansible.builtin.apt:
+    pkg:
+      - cuda
+      - nvidia-cuda-toolkit
+    state: present
+    update_cache: true
+
+...

@@ -1,0 +1,78 @@
+---
+# echo "deb https://packages.cloud.google.com/apt coral-edgetpu-stable main" | sudo tee /etc/apt/sources.list.d/coral-edgetpu.list
+# curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add -
+# sudo apt-get update
+
+- name: install python env deps
+  become: true
+  ansible.builtin.apt:
+    pkg:
+      - make
+      - build-essential
+      - libssl-dev
+      - zlib1g-dev
+      - libbz2-dev
+      - libreadline-dev
+      - libsqlite3-dev
+      - wget
+      - curl
+      - llvm
+      - libncurses5-dev
+      - libncursesw5-dev
+      - xz-utils
+      - tk-dev
+      - libffi-dev
+      - liblzma-dev
+      - python3
+      - python3-pip
+    state: present
+    update_cache: true
+
+- name: download and build env
+  become: true
+  become_user: "{{ansible_user}}"
+  ansible.builtin.shell: |
+    rm -rf /home/autobot/.pyenv
+    curl https://pyenv.run | bash
+
+# Pycoral stuff only works with python 3.8
+# so global swap to 3.8
+- name: swap to python 3.8
+  become: true
+  become_user: "{{ansible_user}}"
+  ansible.builtin.shell: |
+    ~/.pyenv/bin/pyenv install -v 3.8.15
+    ~/.pyenv/bin/pyenv activate 3.8.15
+    ~/.pyenv/bin/pyenv global 3.8.15
+
+- name: add the TPU source
+  become: true
+  ansible.builtin.shell: |
+    echo "deb https://packages.cloud.google.com/apt coral-edgetpu-stable main" | sudo tee /etc/apt/sources.list.d/coral-edgetpu.list
+    curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add -
+
+- name: install c libs needed for coral
+  become: true
+  ansible.builtin.apt:
+    pkg:
+      - libedgetpu1-std
+    state: present
+    update_cache: true
+
+# Add the pycoral library (have to do it this way)
+# - name: add the pycoral library
+#   become: true
+#   become_user: autobot
+#   ansible.builtin.shell: |
+#     python3 -m pip install --extra-index-url https://google-coral.github.io/py-repo/ pycoral~=2.0
+
+# - name: add tensorflow
+#   become: true
+#   become_user: autobot
+#   ansible.builtin.pip:
+#     name:
+#       - tensorflow
+#       - tensorflow_addons
+#       - ftfy
+
+...

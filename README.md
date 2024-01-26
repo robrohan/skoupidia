@@ -91,6 +91,13 @@ Edit the file `/etc/containerd/config.toml`, and change the setting `SystemdCgro
 ...
 ```
 
+---
+
+**Note:** Adding GPUs to the config.toml https://github.com/NVIDIA/k8s-device-plugin#quick-start
+
+---
+
+
 This will enable the systemd cgroup driver for the containerd container runtime.
 
 ```bash
@@ -222,6 +229,12 @@ kubectl label nodes kworker1 has_gpu=true
 kubectl label nodes kworker2 has_tpu=true
 ```
 
+---
+
+**Note:** use `accelerator=` with a type `example-gpu-x100` to mark nodes hardware
+
+---
+
 You can see the labels with
 
 ```bash
@@ -253,6 +266,8 @@ kubectl -n default exec -it local-pv-pod -- /bin/bash
 curl -fsSL https://tailscale.com/install.sh | sh
 ```
 
+
+
 ## Install Kubeflow
 
 (tbd)
@@ -283,6 +298,17 @@ kubectl apply -f https://raw.githubusercontent.com/robrohan/skoupidia/main/kuber
 kubectl patch pv usb-jelly-1-pv-volume -p '{"spec":{"claimRef": null}}'
 ```
 
+# Troubleshooting 
+
+## DNS
+
+On worker nodes
+
+```bash
+sudo vi /etc/systemd/resolved.conf
+sudo systemctl restart systemd-resolved.service
+sudo cat /etc/resolv.conf
+```
 
 # References
 

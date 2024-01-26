@@ -9,10 +9,24 @@ spec:
     - ReadWriteOnce
   resources:
     requests:
-      storage: 10Gi
+      storage: 3Gi
   selector:
     matchLabels:
       type: "local"
+---
+
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: jupyter-models-claim
+  namespace: science
+spec:
+  storageClassName: local-storage
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 100Gi
 ---
 
 apiVersion: apps/v1
@@ -37,14 +51,29 @@ spec:
           requiredDuringSchedulingIgnoredDuringExecution:
             nodeSelectorTerms:
             - matchExpressions:
-              - key: has_tpu
+              - key: has_gpu
                 operator: In
                 values:
                   - "true"
       volumes:
+        - name: bin
+          hostPath:
+            path: /usr/lib/nvidia-cuda-toolkit/bin
+        - name: lib
+          hostPath:
+            path: /usr/lib/nvidia-cuda-toolkit/
+        - name: libcuda-so-1
+          hostPath:
+            path: /usr/lib/x86_64-linux-gnu/libcuda.so.1
+        - name: libcuda-so
+          hostPath:
+            path: /usr/lib/x86_64-linux-gnu/libcuda.so
         - name: jupyter-storage
           persistentVolumeClaim:
             claimName: jupyter-claim
+        - name: jupyter-models-storage
+          persistentVolumeClaim:
+            claimName: jupyter-models-claim
       dnsPolicy: ClusterFirst
       containers:
         - name: jupyter-container
@@ -62,12 +91,22 @@ spec:
           volumeMounts:
             - mountPath: "/home/jovyan/work"
               name: jupyter-storage
+            - mountPath: "/data"
+              name: jupyter-models-storage
+            - mountPath: /usr/local/nvidia/bin
+              name: bin
+            - mountPath: /usr/local/nvidia/lib
+              name: lib
+            - mountPath: /usr/lib/x86_64-linux-gnu/libcuda.so.1
+              name: libcuda-so-1
+            - mountPath: /usr/lib/x86_64-linux-gnu/libcuda.so
+              name: libcuda-so
           ### WARNING, this is only here because I am tool lazy to figure out the
           ### right way to get the coral libs working. If not using a coral TPU, 
           ### probably remove these.
-          securityContext:
-            privileged: true
-            allowPrivilegeEscalation: true
+          # securityContext:
+          #   privileged: true
+          #   allowPrivilegeEscalation: true
 ---
 
 kind: Service
