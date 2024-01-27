@@ -141,8 +141,7 @@ sudo chown $(id -u):$(id -g) $HOME/.kube/config
 On each worker nodes run the join command (note your values will be slightly different)
 
 ```bash
-kubeadm join 192.168.1.15:6443 --token 3eown3.mqv6a0p2pz3vd6il \
-        --discovery-token-ca-cert-hash sha256:926d39ea23aab584720dd3cf846124dc4b08bddd2021b18252a8e7e9dee765ec
+kubeadm join 192.168.1.15:6443 --token 3eo...6il --discovery-token-ca-cert-hash sha256:92a23........e9dee765ec
 ```
 
 ### Cluster Networking Using Calico
@@ -162,6 +161,7 @@ But we need to add container networking before they will be in the ready state
 ```bash
 kubectl apply -f https://raw.githubusercontent.com/projectcalico/calico/v3.26.1/manifests/calico.yaml
 ```
+(or use the version in the repos `./kubernetes/` folder)
 
 After applying calico, give the cluster some time to get all the node into the ready state.
 
@@ -177,18 +177,21 @@ We now have a working cluster!
 
 ### Add MetalLB
 
-For up to date info see here: https://metallb.org/installation/ but in summary, we are going to install the loadbalancer:
+Kubernetes only really works correctly with an external load balancer that feeds it IPs. Without that it's difficult to run several workloads on the cluster - for example, there is only one port 80.
+
+MetalLB runs inside of Kubernetes and pretends to be a load balancer. It's great.
+
+For up to date info see here: https://metallb.org/installation/ but in summary, we are going to install the load balancer:
 
 ```bash
 kubectl apply -f https://raw.githubusercontent.com/metallb/metallb/v0.13.12/config/manifests/metallb-native.yaml
 ```
 
-And then, associate your local IP pool to the local load balancer by editing an applying `kubernetes/metallb_stage2.yaml`.
-
+After it is installled, we need to configure what IP addresses it gives out. We'll associate our local IP pool to the local load balancer by editing an applying `./kubernetes/metallb_stage2.yaml`.
 
 ### Add Some Storage
 
-There are many ways to add storage to the cluster. For something more than just playing around in a home lab, have a look into [Minio][minio]. Minio creates a local storage system that is S3 compatible. This will allow any pod to use the storage. Here though, we are just using local disk storage.
+There are many ways to add storage to the cluster. For something more than just playing around in a home lab, have a look into [Minio][minio]. Minio creates a local storage system that is S3 compatible. This will allow any pod to use the storage. We'll actually set that up later. Here though, we are just using local disk storage.
 
 This is quite specific to how you have disks setup, but here is an example on mine. I have an external USB drive plugged into the master node. It is already formatted and ready to go. First you need to find which `/dev` the USB is plugged into, and then you can create a folder and mount it:
 
@@ -213,9 +216,7 @@ echo "/dev/sdb1 /mnt/usbd ext4 defaults 0 0" >> /etc/fstab
 echo "/dev/sdc2 /mnt/usbc ext4 defaults 0 0" >> /etc/fstab
 ```
 
-For example.
-
-With the drive mounted, you can make a PersistentVolume definition
+With the drive mounted, you can make a PersistentVolume definitions. Have a look at `./kuberenets/oscar/local-pv-volume.yaml` for some examples.
 
 ### Add Labels 
 
@@ -241,7 +242,7 @@ You can see the labels with
 kubectl get nodes --show-labels
 ```
 
-Then you can do something like:
+Then, when deploying a service, you can do something like:
 
 ```yaml
 spec:
@@ -256,11 +257,11 @@ spec:
               - hdd
 ```
 
-```bash
-kubectl -n default exec -it local-pv-pod -- /bin/bash
-```
+To ensure the pod gets the correct hardware.
 
 ## Optional - Install Tailscale
+
+(tbd)
 
 ```bash
 curl -fsSL https://tailscale.com/install.sh | sh
@@ -271,6 +272,8 @@ curl -fsSL https://tailscale.com/install.sh | sh
 (tbd)
 
 # My Own Personal Setup
+
+In the folder `./kubernetes/oscar/` you will find the configuration definitions I have for my cluster. You may find them as useful examples.
 
 Create my namespaces. I use `tools` for thinks like Jellyfin media server and utilities, and `science` for doing actual work.
 
