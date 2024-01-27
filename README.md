@@ -272,27 +272,70 @@ curl -fsSL https://tailscale.com/install.sh | sh
 
 # My Own Personal Setup
 
+Create my namespaces. I use `tools` for thinks like Jellyfin media server and utilities, and `science` for doing actual work.
+
 ```bash
 kubectl apply -f https://raw.githubusercontent.com/robrohan/skoupidia/main/kubernetes/oscar/namespaces.yaml
 ```
+
+I've already a mount point on all the nodes for scratch storage (`/mnt/kdata`). See the `local-pv-volume` for details. This will let pods claim some of that data.
 
 ```bash
 kubectl apply -f https://raw.githubusercontent.com/robrohan/skoupidia/main/kubernetes/oscar/local-pv-volume.yaml
 ```
 
+Those storage options get reused once the pod goes down, and are only useful for temporary storage. For longer term storage I have a few USB drives plugged into various nodes. I used these drives for local media for jellyfin, and when downloading / training machine learning models I want to keep around
+
 ```bash
 kubectl apply -f https://raw.githubusercontent.com/robrohan/skoupidia/main/kubernetes/oscar/usb-pv-volume.yaml
 ```
+
+Deployment of our local media server
+
 
 ```bash
 kubectl apply -f https://raw.githubusercontent.com/robrohan/skoupidia/main/kubernetes/oscar/jellyfin.yaml
 ```
 
+Deployment of my custom built Jupyter notebook install.
+
+
 ```bash
 kubectl apply -f https://raw.githubusercontent.com/robrohan/skoupidia/main/kubernetes/oscar/jupyter.yaml
 ```
 
+Create an S3 like (s3 compatible) storage service locally
+
+```bash
+kubectl apply -f https://raw.githubusercontent.com/robrohan/skoupidia/main/kubernetes/oscar/minio.yaml
 ```
+
+Install the [CLI client](https://min.io/docs/minio/linux/reference/minio-mc.html) to interact with the buckets:
+
+```bash
+curl https://dl.min.io/client/mc/release/linux-amd64/mc --create-dirs -o $HOME/bin/mc
+chmod u+x $HOME/bin/mc
+mc --help
+```
+
+Example usage:
+
+```bash
+mc alias set oscar http://192.168.1.23:80 minio minio123  # setup the client
+mc admin info myminio
+mc mb oscar/test-bucket
+mc ls oscar
+```
+
+This a just a utility I made to generate random MIDI files for musical inspiration and to feed into some models I am playing with (probably not interesting)
+
+```bash
+kubectl apply -f https://raw.githubusercontent.com/robrohan/skoupidia/main/kubernetes/oscar/songomatic.yaml
+```
+
+If a volume ever gets stuck, and you want to allow others to claim it, you can un-taint it like this:
+
+```bash
 kubectl patch pv usb-jelly-1-pv-volume -p '{"spec":{"claimRef": null}}'
 ```
 
@@ -300,7 +343,7 @@ kubectl patch pv usb-jelly-1-pv-volume -p '{"spec":{"claimRef": null}}'
 
 ## DNS
 
-This is can be quite frustrating. Inside a worker node, it will use the master node for DNS. The master node will look inside itself to resolve the DNS entry, but if it doesn't know the URL, it'll look in `/etc/resolv.conf` for a name server.
+This is can be quite frustrating. I think this is just an Ubuntu thing. Inside a worker node, it will use the master node for DNS. The master node will look inside itself to resolve the DNS entry, but if it doesn't know the URL, it'll look in `/etc/resolv.conf` for a name server.
 
 There are seemingly several process that overwrite that file from time to time which seems to kill resolution. The netplan process, resolvd process, and tailscale can over write it too. This is the process I've found that works, but if it gets to be too much of a problem, you can unlink the /etc/resolv.conf file and just edit it.
 
