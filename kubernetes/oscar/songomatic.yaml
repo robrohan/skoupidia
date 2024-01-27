@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: songomatic-deployment
+  namespace: tools
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: songomatic-app
+  template:
+    metadata:
+      labels:
+        app: songomatic-app
+    spec:
+      dnsPolicy: ClusterFirst
+      containers:
+        - name: songomatic-container
+          image: robrohan/songomatic
+          ports:
+            - containerPort: 3000
+              name: "http-server"
+          env:
+            - name: WB_DB_DRIVER
+              value: sqlite3
+            - name: WB_DB_CONNECTION
+              value: main.db
+            - name: WB_DB_POST
+              value: "PRAGMA synchronous = OFF;PRAGMA journal_mode = MEMORY;PRAGMA cache_size = -16000"
+---
+
+kind: Service
+apiVersion: v1
+metadata:
+  name: songomatic-service
+  namespace: tools
+spec:
+  type: LoadBalancer
+  selector:
+    app: songomatic-app
+  ports:
+    - name: http-default
+      protocol: TCP
+      port: 80
+      targetPort: 3000
+  externalTrafficPolicy: Local

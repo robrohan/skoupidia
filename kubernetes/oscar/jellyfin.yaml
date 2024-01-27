@@ -67,7 +67,6 @@ spec:
       labels:
         app: jellyfin-app
     spec:
-      # type: LoadBalancer
       # Request we be scheduled on a node with a hard disk type
       # In my setup, this is only the control-plane node
       affinity:
