@@ -275,13 +275,13 @@ curl -fsSL https://tailscale.com/install.sh | sh
 
 In the folder `./kubernetes/oscar/` you will find the configuration definitions I have for my cluster. You may find them as useful examples.
 
-Create my namespaces. I use `tools` for thinks like Jellyfin media server and utilities, and `science` for doing actual work.
+The first script creates my namespaces. I use `tools` for things like a [Jellyfin media server](https://jellyfin.org/) and `science` for doing actual ML work.
 
 ```bash
 kubectl apply -f https://raw.githubusercontent.com/robrohan/skoupidia/main/kubernetes/oscar/namespaces.yaml
 ```
 
-I've already a mount point on all the nodes for scratch storage (`/mnt/kdata`). See the `local-pv-volume` for details. This will let pods claim some of that data.
+I've already added a mount point on all the nodes for scratch storage (`/mnt/kdata`). See the `local-pv-volume` for details. This will let pods claim some of that data.
 
 ```bash
 kubectl apply -f https://raw.githubusercontent.com/robrohan/skoupidia/main/kubernetes/oscar/local-pv-volume.yaml
