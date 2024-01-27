@@ -307,7 +307,7 @@ Deployment of my custom built Jupyter notebook install.
 kubectl apply -f https://raw.githubusercontent.com/robrohan/skoupidia/main/kubernetes/oscar/jupyter.yaml
 ```
 
-Once installed, you can upload the [Verify](./kubernetes/oscar/VerifyInstall.ipynb) notebook to make sure your GPU is working.
+Once installed, you can upload the [Verify](./kubernetes/oscar/VerifyGPU.ipynb) notebook to make sure your GPU is working.
 
 ![Jupyter seeing GPU](./docs/jupyter.png)
 
@@ -318,9 +318,11 @@ Create an S3 like (s3 compatible) storage service locally
 kubectl apply -f https://raw.githubusercontent.com/robrohan/skoupidia/main/kubernetes/oscar/minio.yaml
 ```
 
+Once installed, you can upload the [Verify](./kubernetes/oscar/VerifyMinio.ipynb) notebook to make sure storage is working.
+
 ![Minio cli example](./docs/minio.png)
 
-Install the [CLI client](https://min.io/docs/minio/linux/reference/minio-mc.html) to interact with the buckets:
+You can also install the [CLI client](https://min.io/docs/minio/linux/reference/minio-mc.html) on your workstations to interact with the buckets:
 
 ```bash
 curl https://dl.min.io/client/mc/release/linux-amd64/mc --create-dirs -o $HOME/bin/mc
