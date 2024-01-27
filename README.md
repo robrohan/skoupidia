@@ -304,11 +304,18 @@ Deployment of my custom built Jupyter notebook install.
 kubectl apply -f https://raw.githubusercontent.com/robrohan/skoupidia/main/kubernetes/oscar/jupyter.yaml
 ```
 
+Once installed, you can upload the [Verify](./kubernetes/oscar/VerifyInstall.ipynb) notebook to make sure your GPU is working.
+
+![Jupyter seeing GPU](./docs/jupyter.png)
+
+
 Create an S3 like (s3 compatible) storage service locally
 
 ```bash
 kubectl apply -f https://raw.githubusercontent.com/robrohan/skoupidia/main/kubernetes/oscar/minio.yaml
 ```
+
+![Minio cli example](./docs/minio.png)
 
 Install the [CLI client](https://min.io/docs/minio/linux/reference/minio-mc.html) to interact with the buckets:
 
@@ -322,7 +329,7 @@ Example usage:
 
 ```bash
 mc alias set oscar http://192.168.1.23:80 minio minio123  # setup the client
-mc admin info myminio
+mc admin info oscar
 mc mb oscar/test-bucket
 mc ls oscar
 ```
@@ -360,12 +367,14 @@ sudo systemctl enable systemd-resolved
 sudo cat /etc/resolv.conf
 ```
 
+![Pods running on the cluster](./docs/pods.png)
+
 # References
 
 - [Build a Kubernetes Home Lab from Scratch step-by-step!](https://www.youtube.com/watch?v=_WW16Sp8-Jw)
 - [How to Install Containerd Container Runtime on Ubuntu 22.04](https://www.howtoforge.com/how-to-install-containerd-container-runtime-on-ubuntu-22-04/)
 - [How to with new stuff](https://v1-28.docs.kubernetes.io/docs/setup/production-environment/tools/kubeadm/install-kubeadm/)
-- [](https://blog.christianposta.com/kubernetes/logging-into-a-kubernetes-cluster-with-kubectl/)
+- [Local kubectl access](https://blog.christianposta.com/kubernetes/logging-into-a-kubernetes-cluster-with-kubectl/)
 
 [minio]: https://medium.com/@karrier_io/minio-s3-compatible-storage-on-kubernetes-74e2cf0902f3
 
