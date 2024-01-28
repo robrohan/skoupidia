@@ -85,12 +85,11 @@ spec:
               value: "password"
             - name: JUPYTER_TOKEN
               value: "easy"
+            - name: LD_LIBRARY_PATH
+              value: "/opt/conda/lib:/usr/local/nvidia/lib:/usr/lib/x86_64-linux-gnu:/usr/lib/x86_64-linux-gnu"
           ports:
             - containerPort: 8888
               name: "http-server"
-          # resources:
-          #     limits:
-          #       alpha.kubernetes.io/nvidia-gpu: 1
           volumeMounts:
             - mountPath: "/home/jovyan/work"
               name: jupyter-storage
