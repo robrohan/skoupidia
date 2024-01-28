@@ -81,6 +81,8 @@ spec:
           env:
             - name: TRANSFORMERS_CACHE
               value: "/data"
+            - name: HF_HOME
+              value: "/data"
             - name: PASSWORD
               value: "password"
             - name: JUPYTER_TOKEN
