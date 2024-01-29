@@ -6,6 +6,8 @@ Your home machine learning cluster made from rubbish and things found 'round the
 ![using the terminal](./docs/b_terminal.png)
 ![and a bunch of skoupidia!](./docs/c_cluster.jpg)
 
+![system layout](./docs/layout.png)
+
 1. [Create A Kubernetes Cluster](#create-a-kubernetes-cluster)
 1. [Install Kubeflow](#install-kubeflow)
 1. [My Own Personal Setup](#my-own-personal-setup)
