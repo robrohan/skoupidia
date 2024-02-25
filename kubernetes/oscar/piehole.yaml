@@ -1,0 +1,76 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pihole
+  namespace: tools
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: pihole-app
+  template:
+    metadata:
+      labels:
+        app: pihole-app
+    spec:
+      # hostNetwork: true
+      dnsPolicy: "None"
+      dnsConfig:
+        nameservers:
+          # upstream DNS used by pihole.
+          - 1.1.1.1
+          - 8.8.8.8
+      containers:
+        - name: pihole
+          image: docker.io/pihole/pihole
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: TZ
+              value: "Pacific/Auckland"
+            - name: WEBPASSWORD
+              value: change_me_123
+          securityContext:
+            privileged: true
+          ports:
+            - containerPort: 53
+              protocol: TCP
+            - containerPort: 53
+              protocol: UDP
+            - containerPort: 67
+              protocol: UDP
+            - containerPort: 80
+              protocol: TCP
+            - containerPort: 443
+              protocol: TCP
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: pihole-service
+  namespace: tools
+spec:
+  # We don't have a load balancer, so we need to specify the node IP
+  # see nginx below...
+  type: LoadBalancer
+  selector:
+    app: pihole-app
+  ports:
+    - name: http-default
+      protocol: TCP
+      port: 80             # port exposed by ingress / nginx
+      targetPort: 80       # port exposed by the pod
+    - name: dnstcp
+      protocol: TCP
+      port: 53
+      targetPort: 53
+    - name: dnsudp
+      protocol: UDP
+      port: 53
+      targetPort: 53
+    - name: udptwo
+      protocol: UDP
+      port: 67
+      targetPort: 67
+  externalTrafficPolicy: Local

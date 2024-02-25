@@ -67,6 +67,7 @@ spec:
       labels:
         app: jellyfin-app
     spec:
+      dnsPolicy: ClusterFirst
       # Request we be scheduled on a node with a hard disk type
       # In my setup, this is only the control-plane node
       affinity:
@@ -88,7 +89,6 @@ spec:
         - name: jellyfin-media-storage
           persistentVolumeClaim:
             claimName: jellyfin-media-claim
-      dnsPolicy: ClusterFirst
       containers:
         - name: jellyfin-container
           image: jellyfin/jellyfin
@@ -104,8 +104,8 @@ spec:
               name: jellyfin-media-storage
 ---
 
-kind: Service
 apiVersion: v1
+kind: Service
 metadata:
   name: jellyfin-service
   namespace: tools
