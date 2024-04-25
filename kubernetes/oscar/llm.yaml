@@ -28,7 +28,7 @@ metadata:
     app: skynet
 data:
   threads: "4"
-  context_size: "512"
+  context_size: "128"
 
 ---
 apiVersion: apps/v1
@@ -62,7 +62,13 @@ spec:
       containers:
         - name: skynet
           image: localai/localai:v2.10.1-cublas-cuda11-core
-          # image: quay.io/go-skynet/local-ai:latest
+          # image: localai/localai:v2.10.1-cublas-cuda12-core
+          # $ ubuntu-drivers devices
+          # $ sudo ubuntu-drivers autoinstall
+          # ... specific driver version (410, 440...), run:
+          # $ sudo apt install nvidia-<driver number>
+          # $ nvidia-smi
+          # $ nvcc --version
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 8080

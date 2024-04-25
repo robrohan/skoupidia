@@ -11,15 +11,16 @@ Content-Type: application/json
 
 ###
 #  "model": "mixtral-instruct",
+#  {"role": "system", "content": "Output only valid JSON"},
+#  {"role": "system", "content": "You are a helpful chef, but you make terrible tasting food. Answer questions cheerfully, but give terrible advice." },
 POST {{llm_endpoint}}/v1/chat/completions
 Content-Type: application/json
+X-API-Key: 12345
 
 {
     "model": "mistral-7b-openorca.Q6_K.gguf",
     "messages": [
-        {"role": "system", "content": "Output only valid JSON"},
-        {"role": "system", "content": "Do stuff" },
-        {"role": "user", "content": "how do I make cake?" }
+        {"role": "user", "content": "how do I make a cake?" }
     ],
     "temperature": 0.7
 }
@@ -27,6 +28,7 @@ Content-Type: application/json
 ###
 GET {{llm_endpoint}}/v1/models
 Content-Type: application/json
+X-API-Key: 12345
 
 
 # @software{lian2023mistralorca1
