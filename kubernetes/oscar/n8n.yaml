@@ -16,6 +16,7 @@ data:
   DB_POSTGRESDB_PASSWORD: default
   N8N_PROTOCOL: http
   N8N_SECURE_COOKIE: "false"
+  N8N_ENCRYPTION_KEY: "12345"
 
 ---
 apiVersion: apps/v1
