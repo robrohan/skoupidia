@@ -1,0 +1,95 @@
+#
+# cd /mnt/kdata/0 ;
+# wget https://huggingface.co/TheBloke/Mistral-7B-OpenOrca-GGUF/resolve/main/mistral-7b-openorca.Q6_K.gguf -O mistral-7b-openorca.Q6_K.gguf
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: skynet-claim
+  namespace: science
+spec:
+  storageClassName: local-storage
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 10Gi
+  selector:
+    matchLabels:
+      type: "local"
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: skynet-secret
+  namespace: science
+  labels:
+    app: skynet
+data:
+  threads: "4"
+  context_size: "512"
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: skynet
+  namespace: science
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: skynet
+  template:
+    metadata:
+      labels:
+        app: skynet
+    spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: has_gpu
+                operator: In
+                values:
+                  - "true"
+      volumes:
+        - name: skynet-models-storage
+          persistentVolumeClaim:
+            claimName: skynet-claim
+      containers:
+        - name: skynet
+          image: localai/localai:v2.10.1-cublas-cuda11-core
+          # image: quay.io/go-skynet/local-ai:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8080
+          envFrom:
+            - configMapRef:
+                name: skynet-secret
+          volumeMounts:
+            - mountPath: "/build/models"
+              name: skynet-models-storage
+          securityContext:
+            privileged: true
+            allowPrivilegeEscalation: true
+      dnsPolicy: ClusterFirst
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: skynet-service
+  namespace: science
+spec:
+  type: LoadBalancer
+  selector:
+    app: skynet
+  ports:
+    - name: skynet-http
+      port: 80             # port exposed by ingress
+      targetPort: 8080     # port exposed by the pod
+      protocol: TCP
+  externalTrafficPolicy: Local

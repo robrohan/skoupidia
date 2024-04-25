@@ -1,0 +1,62 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: n8n-secret
+  namespace: science
+  labels:
+    app: n8n
+data:
+  DB_TYPE: postgresdb
+  DB_POSTGRESDB_DATABASE: postgres
+  DB_POSTGRESDB_HOST: postgres-service.science
+  DB_POSTGRESDB_PORT: "5432"
+  DB_POSTGRESDB_USER: postgres
+  DB_POSTGRESDB_SCHEMA: n8n
+  DB_POSTGRESDB_PASSWORD: default
+  N8N_PROTOCOL: http
+  N8N_SECURE_COOKIE: "false"
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: n8n
+  namespace: science
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: n8n
+  template:
+    metadata:
+      labels:
+        app: n8n
+    spec:
+      containers:
+        - name: n8n
+          image: 'docker.n8n.io/n8nio/n8n'
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 5678
+          envFrom:
+            - configMapRef:
+                name: n8n-secret
+      dnsPolicy: ClusterFirst
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: n8n-service
+  namespace: science
+spec:
+  type: LoadBalancer
+  selector:
+    app: n8n
+  ports:
+    - name: n8n-http
+      port: 80             # port exposed by ingress
+      targetPort: 5678     # port exposed by the pod
+      protocol: TCP
+  externalTrafficPolicy: Local
