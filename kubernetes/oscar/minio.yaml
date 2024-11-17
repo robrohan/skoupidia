@@ -63,6 +63,8 @@ spec:
           value: "minio"
         - name: MINIO_SECRET_KEY
           value: "minio123"
+        - name: MINIO_API_CORS_ALLOW_ORIGIN
+          value: "*"
         ports:
         - containerPort: 9000
         readinessProbe:

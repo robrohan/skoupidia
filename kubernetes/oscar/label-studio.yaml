@@ -1,0 +1,68 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: label-studio-secret
+  namespace: science
+  labels:
+    app: label-studio
+data:
+  LOCAL_FILES_SERVING_ENABLED: "true"
+  LABEL_STUDIO_LOCAL_FILES_SERVING_ENABLED: "true"
+  DJANGO_DB: default
+  POSTGRE_NAME: postgres
+  POSTGRE_USER: postgres
+  POSTGRE_PASSWORD: default
+  POSTGRE_PORT: "5432"
+  POSTGRE_HOST: postgres-service.science
+  JSON_LOG: "1"
+  MINIO_ACCESS_KEY: minio
+  MINIO_SECRET_KEY: minio123
+  MINIO_ROOT_USER: minio
+  MINIO_ROOT_PASSWORD: minio123
+  MINIO_BUCKET_NAME: label-studio
+  MINIO_ENDPOINT: http://minio-service.tools:9000
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: label-studio
+  namespace: science
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: label-studio
+  template:
+    metadata:
+      labels:
+        app: label-studio
+    spec:
+      containers:
+        - name: label-studio
+          image: 'heartexlabs/label-studio:latest'
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8080
+          envFrom:
+            - configMapRef:
+                name: label-studio-secret
+      dnsPolicy: ClusterFirst
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: label-studio-service
+  namespace: science
+spec:
+  type: LoadBalancer
+  selector:
+    app: label-studio
+  ports:
+    - name: label-studio-http
+      port: 80             # port exposed by ingress
+      targetPort: 8080     # port exposed by the pod
+      protocol: TCP
+  externalTrafficPolicy: Local
